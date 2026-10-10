@@ -69,8 +69,8 @@ def solve_nade(vel, dis, sou, rr, ic, l_bc, r_bc, x_start, x_end, t_end, n_point
           conc_new = conc_new + change
           if np.max(np.abs(change)) < 1e-10:
               break
-    conc = conc_new
-    rhs_old = rhs(conc, t, matrix, boundary_term)
-    times.append(t)
-    conc_history.append(conc.copy())
+      conc = conc_new
+      rhs_old = rhs(conc, t, matrix, boundary_term)
+      times.append(t)
+      conc_history.append(conc.copy())
   return x, np.array(times), np.array(conc_history)
