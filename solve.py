@@ -1,8 +1,9 @@
+!pip install pysr
 import numpy as np
 import pandas as pd
 from scipy.sparse import diags, identity
 from scipy.sparse.linalg import spsolve
-
+from pysr import PySRRegressor
 
 def solve_nade(vel, dis, sou, rr, ic, l_bc, r_bc, x_start, x_end, t_end, n_points, n_steps):
     x = np.linspace(x_start, x_end, n_points)
@@ -119,7 +120,7 @@ def make_dataframe(x, times, conc_history, vel, dis, sou):
   for t, conc in zip(times, conc_history):
       tables.append(pd.DataFrame({
           "t": t, "x": x, "C": conc,
-          "v": velocity(x, t), "D": dispersion(x, t), "S": source(x, t),
+          "v": vel(x, t), "D": dis(x, t), "Sou": sou(x, t),
       }))
   return pd.concat(tables, ignore_index=True)
 #This is input for the solution that can be changed anytime, and different data sets may be generated.
@@ -140,3 +141,17 @@ if __name__ == "__main__":
     df.to_csv("ade_data.csv", index=False)
 
 #Generated the data set, now we will find the pattern using pysr 
+data=pd.read_csv("ade_data.csv")
+data = data[data["t"] > 0]
+data = data.sample(frac=1, random_state=0)
+train = data.iloc[:3000]
+test = data.iloc[3000:5000]
+inputs = ["x", "t", "v", "D", "sou"]
+model=PySRRegressor(niterations=100, maxsize=25, binary_operators=["+", "-", "*", "/"], unary_operators=["exp", "erfc", "sqrt"], model_selection="best")
+model.fit(train[inputs], train["C"])
+print(model.equations_[["complexity", "loss", "equation"]])
+print("\nbest equation:", model.sympy())
+predicted = model.predict(test[inputs])
+actual = test["C"]
+r2 = 1 - np.sum((actual - predicted) ** 2) / np.sum((actual - actual.mean()) ** 2)
+print("R2 on test data:", r2)
