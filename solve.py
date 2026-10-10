@@ -4,30 +4,24 @@ from scipy.sparse import diags, identity
 from scipy.sparse.linalg import spsolve
 
 
-def solve_nade(vel, dis, sou, rr, ic, l_bc, r_bc,
-               x_start, x_end, t_end, n_points, n_steps):
-
+def solve_nade(vel, dis, sou, rr, ic, l_bc, r_bc, x_start, x_end, t_end, n_points, n_steps):
     x = np.linspace(x_start, x_end, n_points)
     dx = x[1] - x[0]
     dt = t_end / n_steps
     x_mid = (x[:-1] + x[1:]) / 2
-
     def build_transport(t):
         v_mid = vel(x_mid, t)
         d_mid = dis(x_mid, t)
-
         coef_i = v_mid / 2 + d_mid / dx
         coef_next = v_mid / 2 - d_mid / dx
-
         diag = np.zeros(n_points)
         upper = np.zeros(n_points - 1)
         lower = np.zeros(n_points - 1)
         boundary_term = np.zeros(n_points)
-
         diag[1:-1] = -(coef_i[1:] - coef_next[:-1]) / dx
         upper[1:] = -coef_next[1:] / dx
         lower[:-1] = coef_i[:-1] / dx
-
+      
         vel_ends = vel(x[[0, -1]], t)
         disp_ends = dis(x[[0, -1]], t)
 
@@ -140,3 +134,6 @@ if __name__ == "__main__":
     r_bc = ("neumenn", lambda t: 0)
 
     x, times, conc_history=solve_nade(vel, dis, sou, rr, ic, l_bc, r_bc, x_start=0, x_end=length, t_end=total_time, n_points=201, n_steps=400)
+
+    df = make_dataframe(x, times, conc_history, vel, dis, sou)
+    df.to_csv("ade_data.csv", index=False)
