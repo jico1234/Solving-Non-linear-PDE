@@ -128,3 +128,15 @@ def make_dataframe(x, times, conc_history, vel, dis, sou):
           "v": velocity(x, t), "D": dispersion(x, t), "S": source(x, t),
       }))
   return pd.concat(tables, ignore_index=True)
+if __name__ == "__main__":
+    length = 10.0
+    total_time = 10.0
+    vel = lambda x, t: 0.5 * (1 + 0.2 * np.sin(2 * np.pi * t / total_time)) + 0 * x
+    dis = lambda x, t: 0.05 * (1 + 0.5 * x / length)
+    sou = lambda x, t: 0.02 * np.exp(-(x - 3) ** 2 / 0.5) * (t < 5)
+    rr = 0.05
+    ic=lambda x: 0*x
+    l_bc = ("dirichlet", lambda t: 1.0)
+    r_bc = ("neumenn", lambda t: 0)
+
+    x, times, conc_history=solve_nade(vel, dis, sou, rr, ic, l_bc, r_bc, x_start=0, x_end=length, t_end=total_time, n_points=201, n_steps=400)
