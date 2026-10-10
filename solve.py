@@ -146,7 +146,7 @@ data = data[data["t"] > 0]
 data = data.sample(frac=1, random_state=0)
 train = data.iloc[:3000]
 test = data.iloc[3000:5000]
-inputs = ["x", "t", "v", "D", "sou"]
+inputs = ["x", "t", "v", "D", "Sou"]
 model=PySRRegressor(niterations=100, maxsize=25, binary_operators=["+", "-", "*", "/"], unary_operators=["exp", "erfc", "sqrt"], model_selection="best")
 model.fit(train[inputs], train["C"])
 print(model.equations_[["complexity", "loss", "equation"]])
