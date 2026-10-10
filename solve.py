@@ -42,3 +42,14 @@ def solve_nade(vel, dis, sou, rr, ic, l_bc, r_bc, x_start, x_end, t_end, n_point
       dirichlet_nodes.append((0, left_bc[1]))
   if right_bc[0] == "dirichlet":
       dirichlet_nodes.append((n_points - 1, right_bc[1]))
+
+  conc = initial_conc(x).astype(float)
+  for node, value_at in dirichlet_nodes:
+      conc[node] = value_at(0.0)
+
+  matrix, boundary_term = build_transport(0.0)
+  rhs_old = rhs(conc, 0.0, matrix, boundary_term)
+
+  times = [0.0]
+  conc_history = [conc.copy()]
+  
