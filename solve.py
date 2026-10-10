@@ -33,3 +33,12 @@ def solve_nade(vel, dis, sou, rr, ic, l_bc, r_bc, x_start, x_end, t_end, n_point
     boundary_term[-1] = 2 * disp_ends[1] * right_gradient / dx
     matrix = diags([lower, diag, upper], [-1, 0, 1], format="csr")
     return matrix, boundary_term
+
+
+  def rhs(conc, t, transport_matrix, boundary_term):
+    return (transport_matrix @ conc + boundary_term - reaction_rate * conc**2 + source(x, t))
+  dirichlet_nodes = []
+  if left_bc[0] == "dirichlet":
+      dirichlet_nodes.append((0, left_bc[1]))
+  if right_bc[0] == "dirichlet":
+      dirichlet_nodes.append((n_points - 1, right_bc[1]))
