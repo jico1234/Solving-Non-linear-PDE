@@ -56,22 +56,35 @@ def solve_nade(vel, dis, sou, rr, ic, l_bc, r_bc, x_start, x_end, t_end, n_point
       t = (step + 1) * dt
       matrix, boundary_term = build_transport(t)
       conc_new = conc.copy()
-      for iteration in range(20):
-          rhs_new = rhs(conc_new, t, matrix, boundary_term)
-          residual = conc_new - conc - 0.5 * dt * (rhs_new + rhs_old)
-          jacobian = identity(n_points) - 0.5 * dt * (matrix - 2 * rr * diags(conc_new))
-          jacobian = jacobian.tolil()
-          for node, value_at in dirichlet_nodes:
-              residual[node] = conc_new[node] - value_at(t)
-              jacobian[node, :] = 0
-              jacobian[node, node] = 1
-          change = spsolve(jacobian.tocsc(), -residual)
-          conc_new = conc_new + change
-          if np.max(np.abs(change)) < 1e-10:
-              break
-            
-      conc = conc_new
-      rhs_old = rhs(conc, t, matrix, boundary_term)
-      times.append(t)
-      conc_history.append(conc.copy())
-  return x, np.array(times), np.array(conc_history)
+      for step in range(n_steps):
+    t = (step + 1) * dt
+    matrix, boundary_term = build_transport(t)
+    conc_new = conc.copy()
+
+    for iteration in range(20):
+        rhs_new = rhs(conc_new, t, matrix, boundary_term)
+        residual = conc_new - conc - 0.5 * dt * (rhs_new + rhs_old)
+
+        jacobian = (
+            identity(n_points)
+            - 0.5 * dt * (matrix - 2 * rr * diags(conc_new))
+        )
+        jacobian = jacobian.tolil()
+
+        for node, value_at in dirichlet_nodes:
+            residual[node] = conc_new[node] - value_at(t)
+            jacobian[node, :] = 0
+            jacobian[node, node] = 1
+
+        change = spsolve(jacobian.tocsc(), -residual)
+        conc_new = conc_new + change
+
+        if np.max(np.abs(change)) < 1e-10:
+            break
+
+    conc = conc_new
+    rhs_old = rhs(conc, t, matrix, boundary_term)
+    times.append(t)
+    conc_history.append(conc.copy())
+
+return x, np.array(times), np.array(conc_history)
