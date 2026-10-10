@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.sparse import diags, identity
 from scipy.sparse.linalg import spsolve
+from pysr import PySRRegressor
 
 def solve_nade(vel, dis, sou, rr, ic, l_bc, r_bc, x_start, x_end, t_end, n_points, n_steps):
     x = np.linspace(x_start, x_end, n_points)
@@ -139,8 +140,7 @@ if __name__ == "__main__":
     df.to_csv("ade_data.csv", index=False)
 
 #Generated the data set, now we will find the pattern using pysr
-!pip install -q pysr julia
-from pysr import PySRRegressor
+
 data=pd.read_csv("ade_data.csv")
 data = data[data["t"] > 0]
 data = data.sample(frac=1, random_state=0)
