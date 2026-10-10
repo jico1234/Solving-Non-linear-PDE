@@ -119,3 +119,12 @@ def solve_nade(vel, dis, sou, rr, ic, l_bc, r_bc,
         conc_history.append(conc.copy())
 
     return x, np.array(times), np.array(conc_history)
+
+def make_dataframe(x, times, conc_history, vel, dis, sou):
+  tables = []
+  for t, conc in zip(times, conc_history):
+      tables.append(pd.DataFrame({
+          "t": t, "x": x, "C": conc,
+          "v": velocity(x, t), "D": dispersion(x, t), "S": source(x, t),
+      }))
+  return pd.concat(tables, ignore_index=True)
