@@ -14,3 +14,22 @@ def solve_nade(vel, dis, sou, rr, ic, l_bc, r_bc, x_start, x_end, t_end, n_point
     d_mid=dis(x_mid, t)
     coef_i=v_mid/2+d_mid/dx
     coef_next=v_mid/2-d_mid/dx
+    diag=np.zeros(n_points)
+    upper=np.zeros(n_points-1)
+    lower=np.zeros(n_points-1)
+    boundary_term=np.zeros(n_points)
+    diag[1:-1]=-(coef_i[1:]-coef_next[:-1])/dx
+    upper[1:]=-coef_next[1:]/dx
+    lower[:-1]=coef_i[:-1]/dx
+    vel_ends = vel(x[[0, -1]], t)
+    disp_ends = dis(x[[0, -1]], t)
+    left_gradient = left_bc[1](t) if left_bc[0] == "neumann" else 0
+    right_gradient = right_bc[1](t) if right_bc[0] == "neumann" else 0
+    diag[0] = (-2 * coef_i[0] + 2 * vel_ends[0]) / dx
+    upper[0] = -2 * coef_next[0] / dx
+    boundary_term[0] = -2 * disp_ends[0] * left_gradient / dx
+    diag[-1] = (-2 * vel_ends[1] + 2 * coef_next[-1]) / dx
+    lower[-1] = 2 * coef_i[-1] / dx
+    boundary_term[-1] = 2 * disp_ends[1] * right_gradient / dx
+    matrix = diags([lower, diag, upper], [-1, 0, 1], format="csr")
+    return matrix, boundary_term
