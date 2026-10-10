@@ -122,6 +122,7 @@ def make_dataframe(x, times, conc_history, vel, dis, sou):
           "v": velocity(x, t), "D": dispersion(x, t), "S": source(x, t),
       }))
   return pd.concat(tables, ignore_index=True)
+#This is input for the solution that can be changed anytime, and different data sets may be generated.
 if __name__ == "__main__":
     length = 10.0
     total_time = 10.0
@@ -137,3 +138,5 @@ if __name__ == "__main__":
 
     df = make_dataframe(x, times, conc_history, vel, dis, sou)
     df.to_csv("ade_data.csv", index=False)
+
+#Generated the data set, now we will find the pattern using pysr 
