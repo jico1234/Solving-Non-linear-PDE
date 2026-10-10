@@ -139,7 +139,7 @@ if __name__ == "__main__":
     df.to_csv("ade_data.csv", index=False)
 
 #Generated the data set, now we will find the pattern using pysr
-pip install pysr
+!pip install -q pysr julia
 from pysr import PySRRegressor
 data=pd.read_csv("ade_data.csv")
 data = data[data["t"] > 0]
