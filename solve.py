@@ -156,3 +156,22 @@ actual = test["C"]
 r2 = 1 - np.sum((actual - predicted) ** 2) / np.sum((actual - actual.mean()) ** 2)
 print("R2 on test data:", r2)
 model.equations_.to_csv("pysr_equations.csv", index=False)
+
+#verify the residual and r2 from the pysr_equations.csv to find out the best fit solution.
+import sympy as sp
+max_res=0.001
+min_r2=.98
+x, t, v, D, So = sp.symbols("x t v D Sou")
+sy_map = {"x": x, "t": t, "v": v, "D": D, "Sou": So}
+length, total_time, rr = 10.0, 10.0, 0.05
+v_expr = 0.5 * (1 + 0.2 * sp.sin(2 * sp.pi * t / total_time))
+D_expr = 0.05 * (1 + 0.5 * x / length)
+S_expr = sp.Piecewise((0.02 * sp.exp(-(x - 3) ** 2 / 0.5), t < 5), (0, True))
+def r2_score(actual, predicted):
+    return 1 - np.sum((actual - predicted) ** 2) / np.sum((actual - actual.mean()) ** 2)
+def pde_residual_rms(C_expr, points):
+    C = C_expr.subs({v: v_expr, D: D_expr, So: S_expr})
+    residual = (sp.diff(C, t) + sp.diff(v_expr * C, x) - sp.diff(D_expr * sp.diff(C, x), x) + rr * C ** 2 - S_expr)
+    f = sp.lambdify((x, t), residual, modules=["scipy", "numpy"])
+    values = np.broadcast_to(f(points["x"].values, points["t"].values), (len(points),))
+    return np.sqrt(np.mean(values ** 2))
