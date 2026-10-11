@@ -1,6 +1,6 @@
 # Semi analytical soultion of Non-linear-PDE
 ## Objective of the work
-Produce a closed solution from a semi-analytical method for nonlinear advection-diffusion equations. It will feature variable speed, a source term for dispersion, the beginning condition, and two boundary conditions. Can able to solve a family of PDE.
+Produce a closed solution which is semi-analytical in nature for nonlinear advection-diffusion equations. Where velocity, dispersion, source term, initial condition, and two boundary conditions can be considered as function of space and time. Can able to solve a family of PDE.
 ## Governing Partial Differential Equation
 
 The nonlinear advection–dispersion–reaction equation is given by
