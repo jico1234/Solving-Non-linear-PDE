@@ -40,3 +40,11 @@ S(x,t)=0.02\exp\left(-\frac{(x-3)^2}{0.5}\right)
 \end{cases}
 $$
 
+$$
+k=0.5
+$$
+
+Initial Condition
+$$
+C(x,0)=0
+$$
