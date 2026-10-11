@@ -1,4 +1,4 @@
-# Solving-Non-linear-PDE
+# Semi analytical soultion of Non-linear-PDE
 ## Objective of the work
 Produce a closed solution from a semi-analytical method for nonlinear advection-diffusion equations. It will feature variable speed, a source term for dispersion, the beginning condition, and two boundary conditions. Can able to solve a family of PDE.
 ## Governing Partial Differential Equation
@@ -22,7 +22,7 @@ where:
 Initial condition is again in general form, and boundary condition two options are considered: Drichilet and Neumann, and it can be changed as required.
 ## Steps Considered
 ## Step-1
-Write a finite difference based code and which used CN method to generate the data. To get the data following variable values are considered.
+Write a finite difference based code and which used spatial discretization and an implicit time-integration scheme to generate the data. To get the data following variable values are considered.
 
 $$
 v(x,t)=0.5\left(1+0.2\sin\left(\frac{2\pi t}{T}\right)\right)
@@ -45,6 +45,18 @@ k=0.5
 $$
 
 Initial Condition
+
 $$
 C(x,0)=0
 $$
+
+$$
+C(0,t)=1
+$$
+
+$$
+\left.\frac{\partial C}{\partial x}\right|_{x=L}=0
+$$
+
+## Step-2
+Used PySR to read the ade_data.csv file and remove al  t=0 and train on 3000 random rows and tests on 2000 random columns. It runs PySR with the operators +, -, *, / and the unary functions exp, erfc and sqrt, then finds the equations and print the best one by comparing R2.
