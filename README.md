@@ -23,12 +23,15 @@ Initial condition is again in general form, and boundary condition two options a
 ## Steps Considered
 ## Step-1
 Write a finite difference based code and which used CN method to generate the data. To get the data following variable values are considered.
+
 $$
 v(x,t)=0.5\left(1+0.2\sin\left(\frac{2\pi t}{T}\right)\right)
 $$
+
 $$
 D(x,t)=0.05\left(1+0.5\frac{x}{L}\right)
 $$
+
 $$
 S(x,t)=0.02\exp\left(-\frac{(x-3)^2}{0.5}\right)
 \begin{cases}
