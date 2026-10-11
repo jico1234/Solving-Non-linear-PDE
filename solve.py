@@ -215,9 +215,8 @@ for unary in unary_sets:
     model.equations_.to_csv(csv_file, index=False)
     best = check_equations(csv_file, data, inputs)
     if best is not None:
-    break
-
-print("No equation")
+        break
+    print("No equation")
 if best is None:
     print("No solution")
 else:
