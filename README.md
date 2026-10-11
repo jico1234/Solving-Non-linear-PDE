@@ -59,4 +59,6 @@ $$
 $$
 
 ## Step-2
-Used PySR to read the ade_data.csv file and remove al  t=0 and train on 3000 random rows and tests on 2000 random columns. It runs PySR with the operators +, -, *, / and the unary functions exp, erfc and sqrt, then finds the equations and print the best one by comparing R2.
+Used PySR to read the ade_data.csv file and remove al  t=0 and train on 3000 random rows and tests on 2000 random columns. It runs PySR with the operators +, -, *, / and the unary functions exp, erfc and sqrt, then finds the equations and print the best one by comparing R2. All equations are saved to pysr_equations.csv.
+## Step-3
+In this present step we will use pysr_equations.csv to consider all the values and check two propety residual<0.001 and R2 > .98. If both conditions hold, then we will consider that as a semi-analytical solution. If no such function has been found, then we will change our unary functions and run the code again.
