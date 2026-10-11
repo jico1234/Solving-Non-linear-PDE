@@ -62,3 +62,8 @@ $$
 Used PySR to read the ade_data.csv file and remove al  t=0 and train on 3000 random rows and tests on 2000 random columns. It runs PySR with the operators +, -, *, / and the with 5 different unary function sets.Then finds the equations and store them to pysr_equations_1.csv to pysr_equations_5.csv consider all the values and check two propety residual<0.001 and R2 > .98. If both conditions hold, then we will consider that as a semi-analytical solution. If no such function has been found, then we will change our unary functions sets again and run the code.
 
 ## This is the Nobel procedure to find the semi-analytical solution using finite differences and PySR for nonlinear ADE.
+
+## Limitations
+1. With the increasing niterations, computation time may increase.
+2. Some trivial boundary conditions are considered here; complex boundary conditions may take more computation time.
+3. This is a one-dimensional problem; increase of dimension will use the same method but may need an additional linear solver.
