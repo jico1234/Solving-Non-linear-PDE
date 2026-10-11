@@ -211,10 +211,10 @@ for unary in unary_sets:
     model = PySRRegressor(niterations=100, maxsize=25, binary_operators=["+", "-", "*", "/"], unary_operators=unary, model_selection="best",)
     model.fit(train[inputs], train["C"])
 
-csv_file = "pysr_equations_run" + str(run) + ".csv"
-model.equations_.to_csv(csv_file, index=False)
-best = check_equations(csv_file, data, inputs)
-if best is not None:
+    csv_file = "pysr_equations_run" + str(run) + ".csv"
+    model.equations_.to_csv(csv_file, index=False)
+    best = check_equations(csv_file, data, inputs)
+    if best is not None:
     break
 
 print("No equation")
