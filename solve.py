@@ -208,7 +208,7 @@ run=0
 for unary in unary_sets:
     run = run + 1
     print("Run", run, "- unary operators:", unary)
-    model = PySRRegressor(niterations=100, maxsize=25, binary_operators=["+", "-", "*", "/"], unary_operators=unary, model_selection="best",)
+    model = PySRRegressor(niterations=20, maxsize=25, binary_operators=["+", "-", "*", "/"], unary_operators=unary, model_selection="best",)
     model.fit(train[inputs], train["C"])
 
     csv_file = "pysr_equations_run" + str(run) + ".csv"
