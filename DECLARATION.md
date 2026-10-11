@@ -67,3 +67,21 @@ Used PySR to read the ade_data.csv file and remove al  t=0 and train on 3000 ran
 1. With the increasing niterations, computation time may increase.
 2. Some trivial boundary conditions are considered here; complex boundary conditions may take more computation time.
 3. This is a one-dimensional problem; increase of dimension will use the same method but may need an additional linear solver.
+4. Symbolic regression identifies candidate expressions from the generated data; it does not guarantee a unique analytical solution.
+5. A high (R^2) value does not independently establish physical validity or generalization to unseen conditions.
+
+## Software and Dependencies
+1. NumPy
+2. Pandas
+3. Scipy
+4. SymPy
+5. PySR
+6. Julia
+
+## Reproducibility
+The program uses a constant random seed for dataset sampling, which allows for the same row-sampling sequence to be replicated if the input dataset does not change.
+
+## Declaration
+I declare that this program solves non-linear ADE through a computational framework, which generates the data for the next symbolic regression framework. The numerical results, symbolic expressions, and associated performance measures are computational outputs whose accuracy and scientific applicability must be assessed.
+Name: Dr. Ayan Chatterjee
+Date:11/10/26
