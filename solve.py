@@ -155,3 +155,4 @@ predicted = model.predict(test[inputs])
 actual = test["C"]
 r2 = 1 - np.sum((actual - predicted) ** 2) / np.sum((actual - actual.mean()) ** 2)
 print("R2 on test data:", r2)
+model.equations_.to_csv("pysr_equations.csv", index=False)
