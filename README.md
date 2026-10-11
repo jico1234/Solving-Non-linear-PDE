@@ -18,3 +18,4 @@ where:
 - $S(x,t)$: Source or sink term
 - $x$: Spatial coordinate
 - $t$: Time
+Initial condition is again in general form, and boundary condition two options are considered: Drichilet and Neumann, and it can be changed as required.
