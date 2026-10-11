@@ -6,12 +6,7 @@ Produce a closed solution from a semi-analytical method for nonlinear advection-
 The nonlinear advection–dispersion–reaction equation is given by
 
 $$
-\frac{\partial C}{\partial t}
-+\frac{\partial (vC)}{\partial x}
-=
-\frac{\partial}{\partial x}
-\left(D\frac{\partial C}{\partial x}\right)
--kC^2+S
+\frac{\partial C}{\partial t} +\frac{\partial (vC)}{\partial x} = \frac{\partial}{\partial x} \left(D\frac{\partial C}{\partial x}\right) -kC^2+S
 $$
 
 where:
