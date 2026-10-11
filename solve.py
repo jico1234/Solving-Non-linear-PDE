@@ -3,6 +3,7 @@ import pandas as pd
 from scipy.sparse import diags, identity
 from scipy.sparse.linalg import spsolve
 from pysr import PySRRegressor
+import sympy as sp
 
 def solve_nade(vel, dis, sou, rr, ic, l_bc, r_bc, x_start, x_end, t_end, n_points, n_steps):
     x = np.linspace(x_start, x_end, n_points)
@@ -139,7 +140,7 @@ if __name__ == "__main__":
     df = make_dataframe(x, times, conc_history, vel, dis, sou)
     df.to_csv("ade_data.csv", index=False)
 
-#Generated the data set, now we will find the pattern using pysr
+#Generated the data set, now we will find the pattern using pysr, verify the residual and r2 from the pysr_equations.csv to find out the best fit solution
 
 data=pd.read_csv("ade_data.csv")
 data = data[data["t"] > 0]
@@ -147,20 +148,9 @@ data = data.sample(frac=1, random_state=0)
 train = data.iloc[:3000]
 test = data.iloc[3000:5000]
 inputs = ["x", "t", "v", "D", "Sou"]
-model=PySRRegressor(niterations=100, maxsize=25, binary_operators=["+", "-", "*", "/"], unary_operators=["exp", "erfc", "sqrt"], model_selection="best")
-model.fit(train[inputs], train["C"])
-print(model.equations_[["complexity", "loss", "equation"]])
-print("\nbest equation:", model.sympy())
-predicted = model.predict(test[inputs])
-actual = test["C"]
-r2 = 1 - np.sum((actual - predicted) ** 2) / np.sum((actual - actual.mean()) ** 2)
-print("R2 on test data:", r2)
-model.equations_.to_csv("pysr_equations.csv", index=False)
-
-#verify the residual and r2 from the pysr_equations.csv to find out the best fit solution.
-import sympy as sp
 max_res=0.001
-min_r2=.98
+min_r2=0.98
+r2_g=0.98
 x, t, v, D, So = sp.symbols("x t v D Sou")
 sy_map = {"x": x, "t": t, "v": v, "D": D, "Sou": So}
 length, total_time, rr = 10.0, 10.0, 0.05
@@ -175,3 +165,62 @@ def pde_residual_rms(C_expr, points):
     f = sp.lambdify((x, t), residual, modules=["scipy", "numpy"])
     values = np.broadcast_to(f(points["x"].values, points["t"].values), (len(points),))
     return np.sqrt(np.mean(values ** 2))
+
+def check_equations(csv_file, data, inputs, n_points=5000):
+    equations = pd.read_csv(csv_file)
+    actual = data["C"].values
+    points = data.sample(n=min(n_points, len(data)), random_state=1)
+    results = []
+    for _, row in equations.iterrows():
+        r2, residual = np.nan, np.nan
+        try:
+            C_expr = sp.sympify(row["equation"], locals=symbol_map)
+            f = sp.lambdify((x, t, v, D, So), C_expr, modules=["scipy", "numpy"])
+            predicted = np.broadcast_to(f(*[data[c].values for c in inputs]), actual.shape)
+            r2 = r2_score(actual, predicted)
+            if r2 >= r2_gate:
+                residual = pde_residual_rms(C_expr, points)
+        except Exception as err:
+            print(f"  skipped complexity {row['complexity']}: {err}")
+
+        accepted = bool(np.isfinite(r2) and np.isfinite(residual)
+                        and r2 >= r2_gate and r2 > min_r2 and residual < max_res)
+        results.append({"complexity": row["complexity"], "equation": row["equation"],
+                        "r2": r2, "residual": residual, "accepted": accepted})
+    report = pd.DataFrame(results)
+    checked = report[report["r2"] >= r2_gate]
+    if checked.empty:
+        print(f"  No equation reached R2 >= {r2_gate}, so no residual was checked.")
+    else:
+        print(checked[["complexity", "r2", "residual", "accepted"]].to_string(index=False))
+
+    good = report[report["accepted"]]
+    return None if good.empty else good.sort_values("complexity").iloc[0]
+unary_sets = [
+    ["exp", "erfc", "sqrt"],
+    ["exp", "erfc", "tanh"],
+    ["exp", "erfc", "sin", "cos"],
+    ["exp", "erfc", "log", "tanh"],
+    ["exp", "erfc", "square", "tanh"],
+]
+best = None
+run=0
+for unary in unary_sets:
+    run = run + 1
+    print("Run", run, "- unary operators:", unary)
+    model = PySRRegressor(niterations=100, maxsize=25, binary_operators=["+", "-", "*", "/"], unary_operators=unary, model_selection="best",)
+    model.fit(train[inputs], train["C"])
+
+csv_file = "pysr_equations_run" + str(run) + ".csv"
+model.equations_.to_csv(csv_file, index=False)
+best = check_equations(csv_file, data, inputs)
+if best is not None:
+    break
+
+print("No equation")
+if best is None:
+    print("No solution")
+else:
+    print("solution")
+    print("solution is :", best["equation"])
+    
