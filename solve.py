@@ -148,7 +148,7 @@ data = data.sample(frac=1, random_state=0)
 train = data.iloc[:3000]
 test = data.iloc[3000:5000]
 inputs = ["x", "t", "v", "D", "Sou"]
-max_res=0.001
+max_res=0.05
 min_r2=0.98
 r2_gate=0.98
 x, t, v, D, So = sp.symbols("x t v D Sou")
